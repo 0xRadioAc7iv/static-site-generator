@@ -13,7 +13,7 @@ def text_node_to_html_node(text_node: TextNode):
         case TextType.ITALIC:
             return LeafNode("i", text_node.text)
         case TextType.CODE:
-            return LeafNode("code", text_node.text.strip("```"))
+            return LeafNode("code", text_node.text.strip("```").strip("\n"))
         case TextType.LINK:
             return LeafNode("a", text_node.text, {"href": text_node.url})
         case TextType.IMAGE:
@@ -47,23 +47,15 @@ def markdown_to_html_node(markdown: str):
             nodes.append(ParentNode(tag, sub_nodes))
         if block_type == BlockType.QUOTE:
             sub_nodes = []
-            text_nodes = text_to_text_nodes(block)
-
-            quote_lines = [node.text.split("\n") for node in text_nodes]
-
-            for line in quote_lines:
-                for sub_line in line:
-                    sub_nodes.append(text_node_to_html_node(TextNode(sub_line.strip("> "), TextType.TEXT)))
- 
+            cleaned = " ".join(line.lstrip("> ") for line in block.split("\n"))
+            for node in text_to_text_nodes(cleaned):
+                sub_nodes.append(text_node_to_html_node(node))
             nodes.append(ParentNode("blockquote", sub_nodes))
         if block_type == BlockType.UNORDERED_LIST:
             sub_nodes = []
-            sub_blocks = block.split("\n")
-            sub_blocks = [sb.strip("-").strip(" ") for sb in sub_blocks]
-
-            for sb in sub_blocks:
-                sub_nodes.append(LeafNode("li", sb))
-
+            for sb in block.split("\n"):
+                item_nodes = [text_node_to_html_node(n) for n in text_to_text_nodes(sb[2:])]
+                sub_nodes.append(ParentNode("li", item_nodes))
             nodes.append(ParentNode("ul", sub_nodes))
         if block_type == BlockType.ORDERED_LIST:
             sub_nodes = []

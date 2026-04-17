@@ -24,22 +24,9 @@ class ParentNode(HTMLNode):
     def to_html(self):
         if self.tag is None or self.tag == "":
             raise ValueError("tag is required")
-        
+
         children_html = ""
-        
         for child in self.children:
-            if isinstance(child, ParentNode):
-                nested_parent_html = ""
-
-                for ch in child.children:
-                    nested_parent_html += ch.to_html()
-
-                children_html += f"<{child.tag}{child.props_to_html()}>{nested_parent_html}</{child.tag}>"
-                continue
-
-            if child.value is None or child.value == "":
-                raise ValueError("This nodes's child node does not contain a value")
-
             children_html += child.to_html()
 
         return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"

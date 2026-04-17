@@ -3,8 +3,8 @@ import re
 
 markdown_heading_regex_pattern = r"^#{1,6} \w+"
 markdown_code_block_regex_pattern = r"```\n[\s\S]*\n```"
-markdown_quote_block_regex_pattern = r"^>[\s]?\w+"
-markdown_ul_regex_pattern = r"^- \w+"
+markdown_quote_block_regex_pattern = r"^>[\s\S]*"
+markdown_ul_regex_pattern = r"^- .+"
 markdown_ol_regex_pattern = r"^\d+\. \w+"
 
 class BlockType(Enum):
@@ -35,7 +35,7 @@ def block_to_block_type(block: str) -> BlockType:
             is_block_quote_type = False
         if not re.match(markdown_ul_regex_pattern, line):
             is_block_unordered_list_type = False
-        
+
         if not is_block_quote_type and not is_block_unordered_list_type:
             break
 
