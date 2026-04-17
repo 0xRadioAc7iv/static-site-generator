@@ -1,6 +1,7 @@
 import unittest
 from textnode import TextNode, TextType
-from main import *
+from inline import *
+from converter import *
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -30,6 +31,10 @@ class TestTextNode(unittest.TestCase):
     def test_url_is_not_none_when_set(self):
         node = TextNode("This is a text node", TextType.BOLD, "this is a url")
         self.assertIsNotNone(node.url)
+
+    def test_repr(self):
+        node = TextNode("hello", TextType.BOLD, "https://example.com")
+        self.assertEqual(repr(node), "TextNode(hello, **Bold text**, https://example.com)")
     
     def test_text(self):
         node = TextNode("This is a text node", TextType.TEXT)

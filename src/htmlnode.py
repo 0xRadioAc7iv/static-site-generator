@@ -34,7 +34,7 @@ class ParentNode(HTMLNode):
                 for ch in child.children:
                     nested_parent_html += ch.to_html()
 
-                children_html += f"<{child.tag}{self.props_to_html()}>{nested_parent_html}</{child.tag}>"
+                children_html += f"<{child.tag}{child.props_to_html()}>{nested_parent_html}</{child.tag}>"
                 continue
 
             if child.value is None or child.value == "":

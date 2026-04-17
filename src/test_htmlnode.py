@@ -18,6 +18,11 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode("p", "this is some text", props={"id": "main", "lang": "en"})
         self.assertListEqual(node.children, [])
     
+    def test_leaf_to_html_raises_when_value_none(self):
+        node = LeafNode("p", None)
+        with self.assertRaises(ValueError):
+            node.to_html()
+
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
@@ -29,6 +34,23 @@ class TestHTMLNode(unittest.TestCase):
     def test_leaf_to_html_b(self):
         node = LeafNode("b", "BOLD TEXT")
         self.assertEqual(node.to_html(), "<b>BOLD TEXT</b>")
+
+    def test_pre_code_block(self):
+        node = ParentNode("pre", [LeafNode("code", "print('hello')")])
+        self.assertEqual(node.to_html(), "<pre><code>print('hello')</code></pre>")
+
+    def test_pre_code_block_multiline(self):
+        node = ParentNode("pre", [LeafNode("code", "line one\nline two")])
+        self.assertEqual(node.to_html(), "<pre><code>line one\nline two</code></pre>")
+
+    def test_nested_parent_uses_child_props_not_outer(self):
+        # inner <code> has its own class; outer <pre> props must NOT bleed into <code>
+        inner = ParentNode("code", [LeafNode(None, "x")], {"class": "python"})
+        outer = ParentNode("pre", [inner], {"class": "highlight"})
+        self.assertEqual(
+            outer.to_html(),
+            '<pre class="highlight"><code class="python">x</code></pre>',
+        )
 
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
